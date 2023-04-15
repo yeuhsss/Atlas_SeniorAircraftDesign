@@ -2,8 +2,8 @@
 import numpy as np
 #Too many Variables
 #Wing
-W_TO = 82500   #MTOW (iterate on)
-P_rshp = 2380   #iterable
+W_TO = 82561.08   #MTOW (iterate on)
+P_rshp = 7338 #2380   #iterable, ignore
 
 def calcEmptyWeight(W_TO, P_rshp):
     W_dg = W_TO         #design weight
@@ -35,7 +35,7 @@ def calcEmptyWeight(W_TO, P_rshp):
     t_c_root_vt =  0.16512 #check with tre
 
     #fuselage
-    B_w = 90
+    B_w = 96.4
     K_door = 1.12
     K_Lg = 1.12
     L = 73    #measured aribtrary length, excludes nose cap and radome cowling 
@@ -111,9 +111,9 @@ def calcEmptyWeight(W_TO, P_rshp):
     #Wing Weight
     W_wing = 0.0051*(W_dg*N_z)**0.557*S_w**0.649*A**0.5*(t_c_root)**-0.4*(1 + lam)**0.1*np.cos(Lam/180.0*np.pi)**-1.0*S_csw**0.1
     #Horizontal Tail Weight
-    W_HT = 0.0379*K_uht*(1 + F_w/B_h)**-0.25*W_dg**0.639*N_z**0.10*S_ht**0.75*L_t**-1.0*K_y**0.704*np.cos(Lam_ht)**-1.0*A_h**0.166*(1 + S_e/S_ht)**0.1
+    W_HT = 0.0379*K_uht*(1 + F_w/B_h)**-0.25*W_dg**0.639*N_z**0.10*S_ht**0.75*L_t**-1.0*K_y**0.704*np.cos(Lam_ht/180.0*np.pi)**-1.0*A_h**0.166*(1 + S_e/S_ht)**0.1
     #Vertical Tail Weight
-    W_VT = 0.0026*(1 + Ht_Hv)**0.225*W_dg**0.556*N_z**0.536*L_t**(-0.5)*S_vt**0.5*K_z**0.875*np.cos(Lam_vt)**(-1.0)*A_v**0.35*(t_c_root_vt)**(-0.5)
+    W_VT = 0.0026*(1 + Ht_Hv)**0.225*W_dg**0.556*N_z**0.536*L_t**(-0.5)*S_vt**0.5*K_z**0.875*np.cos(Lam_vt/180*np.pi)**(-1.0)*A_v**0.35*(t_c_root_vt)**(-0.5)
 
     #K_ws needed for W_fuse
     K_ws = 0.75*((1 + 2*lam)/(1 + lam))*(B_w*np.tan(Lam/L))
@@ -147,7 +147,7 @@ def calcEmptyWeight(W_TO, P_rshp):
     W_instr = 4.509*K_r*K_tp*N_c**0.541*N_en*(L_f + B_w)**0.5
 
     #Hydraulics or electronics Weight (tbd)
-    W_hyd = 0.2673*N_f*(L_f + B_w)**0.5
+    W_hyd = 0.2673*N_f*(L_f + B_w)**0.937
 
     #Anti-icing
     W_ai = 0.002*W_dg
@@ -160,13 +160,32 @@ def calcEmptyWeight(W_TO, P_rshp):
     #=======================
     #Needed for nacelle group
     W_ec = 2.331*W_engine**0.901*K_p*K_tr
+    W_em = 2*245.8 #weight, lbs, of like EMs,if time premits, look into max  Power requirement for our EM, and look for irl EMs that can satisfy https://skiesmag.com/news/electric-motor-manufacturer-magnix-set-to-conquer-aviation-market/
 
     #Nacelle Group Weight
-    W_ng = .6724*K_ng*N_Lt**0.10*N_w**0.294*N_z**0.119*W_ec**0.611*N_en**0.984*S_n**0.224
+    W_ng = .6724*K_ng*N_Lt**0.10*N_w**0.294*N_z**0.119*W_ec**0.611*N_en**0.984*S_n**0.224 + W_em
 
 
     W_empty = W_ng + W_ai + W_hyd + W_instr + W_av + W_fs + W_fc + W_encl + W_lg_nose + W_lg_main + W_fuse +  W_HT + W_wing + W_VT
 
+
+    print('=============================')
+    print('Summary of WeightResults')
+    print('=============================')
+    print('Wing: %0.3f' % W_wing)
+    print('Vertical Tail: %0.3f' % W_VT)
+    print('Horizontal Tail: %0.3f' % W_HT)
+    print('Fuselage: %0.3f' % W_fuse)
+    print('Main Landing Gear: %0.3f' % W_lg_main)
+    print('Nose Landing Gear: %0.3f' % W_lg_main)
+    print('Engine Controls: %0.3f' % W_encl)
+    print('Flight Controls: %0.3f' % W_fc)
+    print('Fuel System: %0.3f' % W_fs)
+    print('Avionics: %0.3f' % W_av)
+    print('Instruments: %0.3f' % W_instr)
+    print('Hydraulics: %0.3f' % W_hyd)
+    print('Anti-icing: %0.3f' % W_ai)
+    print('Nacelle Group: %0.3f' % W_ng)
     return W_empty
 
 yo  = calcEmptyWeight(W_TO, P_rshp)
