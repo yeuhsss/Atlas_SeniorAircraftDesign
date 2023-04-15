@@ -1,5 +1,6 @@
 #Refined MTOW Estimate
 import numpy as np
+import matplotlib.pyplot as plt
 '''
 I apologize to whoever gets to read this, go to the bottom to see loop. This script combines 
 Henry's fuel/battery function and my empty weight function  to calculate, and iterate on, the MTOW.
@@ -18,7 +19,7 @@ def calcEmptyWeight(W_TO, P_rshp):
     t_c_root = 0.15450
     lam = .7525
     Lam = 20    #degrees, check rads
-    S_csw = 2*((4.254*9.024*2) + (6.295*(5.449 + 5.802)))        #wing control surface area, upper and lower
+    S_csw = 2*((4.254*9.024*2) + (6.295*(5.449 + 5.802)))        #wing control surface area, upper and lower, 295.202474
 
     #HT
     K_uht = 1.143
@@ -29,7 +30,7 @@ def calcEmptyWeight(W_TO, P_rshp):
     K_y = 0.3*L_t
     Lam_ht = 20
     A_h = 5.6
-    S_e = 2*((1.350+3.020)*0.5*8.478)   #elevator area
+    S_e = 2*((1.350+3.020)*0.5*8.478)   #elevator area, 37.04886
 
     #VT
     Ht_Hv = 1
@@ -50,7 +51,7 @@ def calcEmptyWeight(W_TO, P_rshp):
 
     #LG_m
     K_mp = 1.15
-    W_l = 0.043*W_dg    #Raymor approximation, Table 15.2
+    W_l = 0.043*W_dg    #Raymer approximation, Table 15.2
     N_gear = 3
     N_l = 1.5*N_gear
     L_m = 3.68*12   #open vsp measure, (in)
@@ -70,8 +71,8 @@ def calcEmptyWeight(W_TO, P_rshp):
     #flightcontrol
     N_f = 5
     N_m = 1
-    S_r = 2*(2*(1.033+2.288)*0.5*10.691)    #rudder area
-    S_cs = S_csw + S_r + S_e
+    S_r = 2*(2*(1.033+2.288)*0.5*10.691)    #rudder area, 71.009622
+    S_cs = S_csw + S_r + S_e    #total control surface area, 403.260956
     I_yaw = 2494172.151 #simulated using const density in openvsp
 
     #fuelsys
@@ -168,7 +169,7 @@ def calcEmptyWeight(W_TO, P_rshp):
     W_em = 2*245.8 #weight, lbs, of like EMs,if time premits, look into max  Power requirement for our EM, and look for irl EMs that can satisfy https://skiesmag.com/news/electric-motor-manufacturer-magnix-set-to-conquer-aviation-market/
 
     #Nacelle Group Weight
-    W_ng = .6724*K_ng*N_Lt**0.10*N_w**0.294*N_z**0.119*W_ec**0.611*N_en**0.984*S_n**0.224 + W_em
+    W_ng = .6724*K_ng*N_Lt**0.10*N_w**0.294*N_z**0.119*W_ec**0.611*N_en**0.984*S_n**0.224 + W_em #check later, may be only counting as single nacelle
 
 
     W_empty = W_ng + W_ai + W_hyd + W_instr + W_av + W_fs + W_fc + W_encl + W_lg_nose + W_lg_main + W_fuse +  W_HT + W_wing + W_VT
@@ -460,20 +461,28 @@ W_crew_and_payload = 12660      #weight of crew, passengers, and payload, lbs
 tol = 1e-6
 dif = 1
 p = 0
+#MTOW_plot = MTOW
 while dif > tol:
 #while p <50:
     p = p+1
+
     W_empty= calcEmptyWeight(MTOW, MPOW)
 
     SWT_fuel_burn, Takeoff_fuel_burn, climb_fuel_burn, cruise_fuel_burn, desecent_fuel_burn, landing_fuel_burn, total_fuel_burn, total_battery_weight, total_hybrid_weight = Fuel_Fraction_Calculator(AR, Wing_area, c_f, c, d, MTOW, MPOW, SFC, R, segments, eta, h_cruise, V_cruise, hybridization_factors)
 
     MTOW_new = W_empty + total_hybrid_weight + W_crew_and_payload
     dif = abs(MTOW_new - MTOW)
+
+    #MTOW_plot[p] = MTOW_new
     MTOW = MTOW_new
+
 
     #Unsuppress this line if want to iterate with takeoff power
     MPOW = MTOW/W_P
 
 print('New MTOW is: ', MTOW_new)
+print('New Power Req is:', MPOW)
 print('Difference is: ', dif)
 print('Iterations: ;', p)
+
+#plt.plot(p, MTOW_plot)
