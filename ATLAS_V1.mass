@@ -1,0 +1,21 @@
+#ATLAS V1 mass distribution of wing, and empennage
+#---------------------
+#Unit scalings and names
+Lunit = 1.0 ft
+Munit = 1.0 lbm
+Tunit = 1.0 s
+#---------------------
+#Gravity and density (ft/s^2 and lbm/ft^3
+g = 32.17
+rho = 0.03061           #FL280    28k ft
+#rho = 0.0658          #FL050 5kft
+#---------------------
+#   mass     x     y     z     Ixx     Iyy     Izz     [ Ixx  Ixz  Iyz]
+#
+  1648.0   38.83  0.    2.83      0       0      0         ! Propulsion System
+  6439.0   40.91  0.    4.41      0       0      0         ! wing
+  6450.0   40.91  0.    4.41      0       0      0         ! fuel
+   747.0   69.83  0.    8.83      0       0      0         ! HT
+  2337.0   77.08  0.    15.75     0       0      0         ! VT
+
+
