@@ -16,6 +16,41 @@ Landing Flaps, gear Down
 import numpy as np
 import matplotlib.pyplot as plt
 
+#Calculating Skin Friction Coefficent
+def get_C_f(altitude, velocity, char_length, percent_lam_flow):
+
+    #Fixed Values
+    gamma = 1.4
+    R = 53.35               #ft*lbf/(lbm * R)
+
+    #Interpolation Data Bank
+    rho_interp = [0.0765, 0.0565, 0.0408, 0.0287, 0.0189]       #lbm/ft^3
+    t_interp = np.array([59, 23.36, -12.26, -47.83, -69.70])
+    t_interp = t_interp + 459.67                                #Rankine Conversion
+    mu_interp = np.array([3.737, 3.534, 3.324, 3.107, 2.969])
+    mu_interp = mu_interp * 10 ** (-7)                          #slug / (ft*s)
+
+    h_interp = [0, 10000, 20000, 30000, 40000]
+
+    #Interpolates Enviromental Values from Altitude
+    rho = np.interp(altitude, h_interp, rho_interp)
+    T = np.interp(altitude, h_interp, t_interp)
+    viscosity = np.interp(altitude, h_interp, mu_interp)
+
+    Reynolds_component = rho * velocity * char_length / viscosity * 32.174
+
+    C_f_laminar = 1.328 / np.sqrt(Reynolds_component)
+
+    speed_of_sound = np.sqrt(R * T * gamma * 32.174)
+
+    Mach_num = velocity / speed_of_sound
+
+    C_f_turbulent = 0.455 / ( np.log10(Reynolds_component) ** 2.58 * ( 1 + 0.144 * Mach_num ** 2) ** 0.65 )
+
+    C_f = C_f_laminar * (percent_lam_flow) + C_f_turbulent * ( 1 - percent_lam_flow)
+
+    return C_f
+
 #Calculating Zero Lift Drag
 def get_CD_0(S_ref, drag_area_vals, skin_friction_coefficent_vals, form_factor_vals, interference_factor_vals, wetted_area_vals):
 
