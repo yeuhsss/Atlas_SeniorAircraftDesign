@@ -499,7 +499,9 @@ def tradeStudies(AR, t_c_root, Wing_area, V_cruise, h1, h2, h3, h4):
     COMMENTS:
     1) May want to suppress some of the printed results, can be a lot when rerunning code
 
-    2)Tried but commented out code that tries to evaluate change in one variable (ex. AR vs MTOW) for a more simple trade study
+    2) Tried but commented out code that tries to evaluate change in one variable (ex. AR vs MTOW) for a more simple trade study
+    
+    3) Made wing span variable with in code, which is calucalated from AR and wing area
     '''
     c = -0.0866                     #Roskam Vol 1 Table 3.5 (For a regional Turboprop)
     d = 0.8099                      #Roskam Vol 1 Table 3.5 (For a regional Turboprop)
@@ -510,8 +512,10 @@ def tradeStudies(AR, t_c_root, Wing_area, V_cruise, h1, h2, h3, h4):
 
     # Setting Variables From OpenVSP (VT-V1)
     #AR = 10.06133                   #Aspect Ratio
-    Span = 96.428                   #Wing Span (ft)
     #Wing_area = 805.06              #Wing Area (ft^2)
+
+    #Span = 96.428                   #Wing Span (ft)
+    Span = np.sqrt(AR*Wing_area)
 
     MTOW = 82561.08                 #Max Takeoff Weight (lbs)
     MPOW = 7000                     #Hp Check Value!!!!!!!!!!!
