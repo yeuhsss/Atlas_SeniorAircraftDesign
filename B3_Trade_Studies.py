@@ -14,7 +14,7 @@ I apologize to whoever gets to read this, go to the bottom to see loop. This scr
 Henry's fuel/battery function and my empty weight function  to calculate, and iterate on, the MTOW.
 Our takeoff power also iterates with each loop too.
 '''
-def calcEmptyWeight(W_TO, P_rshp, A):
+def calcEmptyWeight(W_TO, P_rshp, AR, t_c_root, S_w):
     '''
     Hard coding all constants in this function so you don't need to call them. May or may not be a good idea. 
     If one wants to change aspects to the design, they would need to edit the code within this function
@@ -23,22 +23,24 @@ def calcEmptyWeight(W_TO, P_rshp, A):
     INPUTS:
     W_TO - Takeoff Weight (lbs)
     P_rshp - Shaft HP at takeoff (hp)
-    A - Wing Aspect Ratio
+    AR - Wing Aspect Ratio
+    t_c_root - thickness to chord ratio for wing
+    S_w - wing ref area
 
     OUTPUTS:
     Component Weights
     '''
-    W_dg = W_TO         #design weight
-    N_z = 1.5*3.5          #ult load factor, raymor table 14.2
-    S_w = 805.06257
-    #A = 10.0613
-    t_c_root = 0.15450
-    lam = .7525
-    Lam = 20    #degrees, check rads
-    S_csw = 2*((4.254*9.024*2) + (6.295*(5.449 + 5.802)))        #wing control surface area, upper and lower, 295.202474
+    W_dg = W_TO             #design weight, lbs
+    N_z = 1.5*3.5           #ult load factor, raymor table 14.2
+    #S_w = 805.06257         #trapezoidal wing area, ft^2
+    #AR = 10.0613            #Wing Aspect Ratio
+    #t_c_root = 0.15450      #Wing thickness-to-chord ratio 
+    lam = .7525             #Taper ratio  
+    Lam = 20                #Wing Sweep degrees, check rads
+    S_csw = 2*((4.254*9.024*2) + (6.295*(5.449 + 5.802)))        #wing control surface area, upper and lower, 295.202474 ft^2
 
     #HT
-    K_uht = 1.143
+    K_uht = 1.143           #coeff, NEED CHANGE TO 1.0, SEE RAYMER 
     F_w = 10
     B_h = 31.6
     S_ht = 202.18
@@ -131,7 +133,7 @@ def calcEmptyWeight(W_TO, P_rshp, A):
     #=======================
 
     #Wing Weight
-    W_wing = 0.0051*(W_dg*N_z)**0.557*S_w**0.649*A**0.5*(t_c_root)**-0.4*(1 + lam)**0.1*np.cos(Lam/180.0*np.pi)**-1.0*S_csw**0.1
+    W_wing = 0.0051*(W_dg*N_z)**0.557*S_w**0.649*AR**0.5*(t_c_root)**-0.4*(1 + lam)**0.1*np.cos(Lam/180.0*np.pi)**-1.0*S_csw**0.1
     #Horizontal Tail Weight
     W_HT = 0.0379*K_uht*(1 + F_w/B_h)**-0.25*W_dg**0.639*N_z**0.10*S_ht**0.75*L_t**-1.0*K_y**0.704*np.cos(Lam_ht/180.0*np.pi)**-1.0*A_h**0.166*(1 + S_e/S_ht)**0.1
     #Vertical Tail Weight
@@ -444,31 +446,6 @@ def Fuel_Fraction_Calculator(AR, Wing_area, c_f, c, d, MTOW, MPOW, SFC, R, segme
     print("Total Hybrid Weight (lbf): ", total_hybrid_weight)
 
     return SWT_fuel_burn, Takeoff_fuel_burn, climb_fuel_burn, cruise_fuel_burn, desecent_fuel_burn, landing_fuel_burn, total_fuel_burn, total_battery_weight, total_hybrid_weight
-#=============================================================================
-#Now that functions defined (in poor way), define variables to start the loop and initiate!
-c = -0.0866                     #Roskam Vol 1 Table 3.5 (For a regional Turboprop)
-d = 0.8099                      #Roskam Vol 1 Table 3.5 (For a regional Turboprop)
-c_f = 0.0026                    #Raymer 2012 Table 12.3
-
-SFC = 0.4                       #Metabook (Mattingly 1996 Fig 1.17b) lbm / (hp * hr)
-eta = 0.9                       #Propeller Efficency?
-
-# Setting Variables From OpenVSP (VT-V1)
-#AR = 10.06133                   #Aspect Ratio
-AR = 12
-Span = 96.428                   #Wing Span (ft)
-Wing_area = 805.06              #Wing Area (ft^2)
-
-MTOW = 82561.08                 #Max Takeoff Weight (lbs)
-MPOW = 7000                     #Hp Check Value!!!!!!!!!!!
-R = 500 * 6076.12               #Range (ft)
-h_cruise = 28000                #Cruising Altitude (ft)!!!!!!
-V_cruise = 350 * 1.688 
-
-segments = 20
-
-#Start Warmup Taxi, Takeoff, Climb, Cruise, Descent, Landing (Loitter Unavaliable)
-hybridization_factors = (0.2, 0.2, 0, 0, 0.5, 0.5)
 #================================================================================================================
 '''
 #Dash 8
@@ -503,36 +480,81 @@ SFC = 0.4                       #Metabook (Mattingly 1996 Fig 1.17b) lbm / (hp *
 eta = 0.9                       #Propeller Efficency?
 '''
 
-#OTHER VARIABLES FOR LOOP
-W_P = 11.25     #lbf/hp
-W_crew_and_payload = 12660      #weight of crew, passengers, and payload, lbs
+def tradeStudies(AR, t_c_root, Wing_area, V_cruise, h1, h2, h3, h4):
+    '''
+    Trade Studies Loop. Slight modification of B1_MTOW_Refined.py
+    Takes input variables (for )
+    INPUTS:
+    AR - Wing Aspect Ratio
+    t_c_root - maximum thickness-to-chord ratio (constant along wing)
+    Wing_area - total wing area, ft^2
+    V_cruise - cruise speed, knts
+    h1, h2, h3, h4 - hybrid. factors for Warmup Taxi, Takeoff, Descent, Landing (climb and cruise are zero hybrid)
 
-#Loop setup
-tol = 1e-6
-dif = 1
-p = 0
-#MTOW_plot = MTOW
-while dif > tol:
-#while p <50:
-    p = p+1
-
-    W_empty= calcEmptyWeight(MTOW, MPOW, AR)
-
-    SWT_fuel_burn, Takeoff_fuel_burn, climb_fuel_burn, cruise_fuel_burn, desecent_fuel_burn, landing_fuel_burn, total_fuel_burn, total_battery_weight, total_hybrid_weight = Fuel_Fraction_Calculator(AR, Wing_area, c_f, c, d, MTOW, MPOW, SFC, R, segments, eta, h_cruise, V_cruise, hybridization_factors)
-
-    MTOW_new = W_empty + total_hybrid_weight + W_crew_and_payload
-    dif = abs(MTOW_new - MTOW)
-
-    #MTOW_plot[p] = MTOW_new
-    MTOW = MTOW_new
+    OUTPUTS:
+    Weight Breakdown
+    Fuel Breakdown
 
 
-    #Unsuppress this line if want to iterate with takeoff power
-    MPOW = MTOW/W_P
+    COMMENTS:
+    1) May want to suppress some of the printed results, can be a lot when rerunning code
 
-print('New MTOW is: ', MTOW_new)
-print('New Power Req is:', MPOW)
-print('Difference is: ', dif)
-print('Iterations: ;', p)
+    2)Tried but commented out code that tries to evaluate change in one variable (ex. AR vs MTOW) for a more simple trade study
+    '''
+    c = -0.0866                     #Roskam Vol 1 Table 3.5 (For a regional Turboprop)
+    d = 0.8099                      #Roskam Vol 1 Table 3.5 (For a regional Turboprop)
+    c_f = 0.0026                    #Raymer 2012 Table 12.3
 
-#plt.plot(p, MTOW_plot)
+    SFC = 0.4                       #Metabook (Mattingly 1996 Fig 1.17b) lbm / (hp * hr)
+    eta = 0.9                       #Propeller Efficency?
+
+    # Setting Variables From OpenVSP (VT-V1)
+    #AR = 10.06133                   #Aspect Ratio
+    Span = 96.428                   #Wing Span (ft)
+    #Wing_area = 805.06              #Wing Area (ft^2)
+
+    MTOW = 82561.08                 #Max Takeoff Weight (lbs)
+    MPOW = 7000                     #Hp Check Value!!!!!!!!!!!
+    R = 500 * 6076.12               #Range (ft)
+    h_cruise = 28000                #Cruising Altitude (ft)!!!!!!
+    V_cruise = V_cruise * 1.688     #Convert V_cruise to ft/s
+
+    segments = 20
+
+    #Start Warmup Taxi, Takeoff, Climb, Cruise, Descent, Landing (Loitter Unavaliable)
+    hybridization_factors = (h1, h2, 0, 0, h3, h4)
+
+    #OTHER VARIABLES FOR LOOP
+    W_P = 11.25     #lbf/hp
+    W_crew_and_payload = 12660      #weight of crew, passengers, and payload, lbs
+
+    #Loop setup
+    tol = 1e-6
+    dif = 1
+    p = 0
+    #MTOW_plot = MTOW
+    while dif > tol:
+    #while p <50:
+        p = p+1
+
+        W_empty= calcEmptyWeight(MTOW, MPOW, AR, t_c_root, Wing_area)
+
+        SWT_fuel_burn, Takeoff_fuel_burn, climb_fuel_burn, cruise_fuel_burn, desecent_fuel_burn, landing_fuel_burn, total_fuel_burn, total_battery_weight, total_hybrid_weight = Fuel_Fraction_Calculator(AR, Wing_area, c_f, c, d, MTOW, MPOW, SFC, R, segments, eta, h_cruise, V_cruise, hybridization_factors)
+
+        MTOW_new = W_empty + total_hybrid_weight + W_crew_and_payload
+        dif = abs(MTOW_new - MTOW)
+
+        #MTOW_plot[p] = MTOW_new
+        MTOW = MTOW_new
+
+        MPOW = MTOW/W_P
+
+    print('New MTOW is: ', MTOW_new)
+    print('New Power Req is:', MPOW)
+    print('Difference is: ', dif)
+    print('Iterations: ;', p)
+#================================================================================================================
+
+#Test function
+#tradeStudies(AR, t_c_root, Wing_area, V_cruise, h1, h2, h3, h4)
+tradeStudies(10.06133, 0.15450 , 805.06, 350, 0.2, 0.2, 0.5, 0.5)       #Will Produce results from Weights Refinement
