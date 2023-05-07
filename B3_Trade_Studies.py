@@ -558,7 +558,7 @@ def tradeStudies(AR, t_c_root, Wing_area, V_cruise, h1, h2, h3, h4):
     print('Difference is: ', dif)
     print('Iterations: ;', p)
 #================================================================================================================
-
+ 
 #Test function
 #tradeStudies(AR, t_c_root, Wing_area, V_cruise, h1, h2, h3, h4)
 tradeStudies(10.06133, 0.15450 , 805.06, 350, 0.2, 0.2, 0.5, 0.5)       #Will Produce results from Weights Refinement
