@@ -1,0 +1,304 @@
+ATLAS V1
+0.0                        ! Mach
+0  0  0.0                  ! iYsym   iZsym    Zsym 
+805.06  9.50000  90.0      ! Sref     Cref    Bref
+0.0  0.0   0.0             ! Xref   Yref   Zref    moment reference location
+0                          ! Cdoref
+#
+#begin Component Geometry
+#
+#
+#
+#===============================Wing================================
+SURFACE
+Wing	  #surface name
+#
+# Horseshoe Vortex Distribution
+10      1.0      20    1.0    !Nchord  Cspace  Nspan  Sspace
+#
+YDUPLICATE
+      0.0
+#
+ANGLE
+      1.0      #1 deg twist
+#
+TRANSLATE      #x,y,z translation of wing (currently same as openvsp)
+34.000   0.0    4.250    ! X     Y     Z
+#
+#-----------------------------Section 1-----------------------------
+#
+#Xle       Yle         Zle      chord       angle     Nspan   Sspace
+SECTION 
+0.0        0.0         0.0       13.586      0.0        20     1.0
+#
+NACA   
+23015              #wing airfoil
+#
+#-----------------------------Section 1.1-----------------------------
+#
+#Begin Flap Section
+SECTION 
+0.3785      3.5        0.0        12.829     0.0        20    1.0
+#
+NACA   
+23015              
+#
+CONTROL
+Flap
+#gain   Xhinge     XYZhvec        SgnDup
+1.0     0.5975    0. 0. 0.       1.0           #"Specifying XYZhvec = 0. 0. 0. puts the hinge vector along the hinge"
+#
+#-----------------------------Section 1.2-----------------------------
+#
+#End Flap Section
+SECTION 
+1.3495      13.85        0.0         10.887      0.0      20    1.0         
+#
+NACA   
+23015              
+#
+CONTROL
+Flap
+#gain   Xhinge     XYZhvec        SgnDup
+1.0     0.5975    0. 0. 0.       1.0 
+#
+#-----------------------------Section 2-----------------------------
+#
+SECTION
+1.682    17.30       0.0         10.22      0.0          20    1.0   #taper is factored
+#
+NACA
+23015
+#
+#-----------------------------Section 2.1-----------------------------
+#
+#Begin Aileron Section
+SECTION 
+2.525     19.618     0.0         9.619      0.0          20    1.0
+#
+NACA   
+23015              
+#
+CONTROL
+Aileron 
+#gain   Xhinge     XYZhvec      SgnDup
+1.0     0.5975    0. 0. 0.       -1.0     
+#
+#-----------------------------Section 2.2-----------------------------
+#
+#End Aileron Section
+SECTION 
+9.244     38.077     0.0        5.632      0.0         20    1.0
+#
+NACA
+23015              
+#
+CONTROL
+Aileron 
+#gain   Xhinge     XYZhvec        SgnDup
+1.0     0.5975    0. 0. 0.       -1.0 
+#
+#-----------------------------Section 3-----------------------------
+#
+SECTION
+11.761    45.000    0.0      3.901      50         20    1.0
+#
+NACA
+63415              
+#
+#-----------------------------Section 4-----------------------------
+#
+SECTION
+14.647    48.21     3.83       0.7379      0        20    1.0 
+#
+NACA
+63415          #winglet airfoil
+#
+#
+#
+#==============================HTail================================
+SURFACE
+Horizontal Tail
+8  1.0  15  1.0   !Nchord  Cspace  Nspan  Sspace
+#
+YDUPLICATE
+     0.00000 
+#
+TRANSLATE
+71.674  0.0   15.783   ! X Y Z
+#
+#-----------------------------Section 1-----------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+     0           0           0            8.723      0.0       15  1.0    
+#
+AFIL
+64a015.dat    #empennage airfoil (both Htail and VTail)
+#
+#-----------------------------Section 1.1-----------------------------
+#Start Elevator Section
+SECTION 
+1.994          4.278        0.0        7.208        0.0          15  1.0
+#
+AFIL
+64a015.dat
+#
+CONTROL
+Elevator
+#gain   Xhinge     XYZhvec       SgnDup
+1.0     0.6647    0. 0. 0.       1.0 
+#
+#-----------------------------Section 1.2-----------------------------
+#End Elevator Section
+SECTION 
+7.1839         15.406      0.0         3.093      0.0         15  1.0
+#
+AFIL
+64a015.dat
+#
+CONTROL
+Elevator
+#gain   Xhinge     XYZhvec        SgnDup
+1.0     0.6647    0. 0. 0.       1.0 
+#-----------------------------Section 2-----------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+     7.975       17.103       0         2.443        0.0      15  1.0
+#
+AFIL
+64a015.dat
+#
+#
+#
+#==============================HTail================================
+#
+SURFACE
+Horizontal Tail
+8  1.0  15  1.0   !Nchord  Cspace  Nspan  Sspace
+#
+YDUPLICATE
+     0.00000 
+#
+TRANSLATE
+71.674  0.0   15.783   ! X Y Z
+#
+#-----------------------------Section 1-----------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+     0           0           0            8.723      0.0          15  1.0   
+#
+AFIL
+23012.dat
+#
+#-----------------------------Section 1.1-----------------------------
+#
+#Start Elevator Section
+SECTION 
+1.994          4.278        0.0        7.208        0.0      15  1.0
+#
+AFIL
+23012.dat
+#
+CONTROL
+Elevator
+#gain   Xhinge     XYZhvec       SgnDup
+1.0     0.6647    0. 0. 0.       1.0 
+#
+#-----------------------------Section 1.2-----------------------------
+#
+#End Elevator Section
+SECTION 
+7.1839         15.406      0.0         3.093      0.0        15  1.0
+#
+AFIL
+23012.dat
+#
+CONTROL
+Elevator
+#gain   Xhinge     XYZhvec        SgnDup
+1.0     0.6647    0. 0. 0.       1.0 
+#
+#-----------------------------Section 2-----------------------------
+#
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+     7.975       17.103       0         2.443        0.0       15  1.0
+#
+AFIL
+23012.dat
+#
+#
+#
+#==============================VTail================================
+#
+SURFACE
+Vertical Tail
+10  1.0  8  1.0    !Nchord  Cspace  Nspan  Sspace
+#
+TRANSLATE
+53.209   0.0   4.9   ! X Y Z
+#
+#-----------------------------Section 1-----------------------------
+#
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+     0           0           0           27.428      0.0       8  1.0
+#
+AFIL
+64a015.dat
+#
+#-----------------------------Section 1.1-----------------------------
+#
+#Start Rudder Section
+SECTION 
+   2.241        0           0.816          25.089     0.0   8  1.0
+#
+AFIL
+64a015.dat
+#
+CONTROL
+Rudder
+#gain   Xhinge     XYZhvec      SgnDup
+1.0     0.6647    0. 0. 0.       1.0 
+#
+#-----------------------------Section 2-----------------------------
+#
+SECTION
+    10.989          0            4.066         16.512      0.0   8  1.0   
+#
+AFIL
+64a015.dat
+#
+#-----------------------------Section 3-----------------------------
+#
+SECTION
+    15.584         0            7.922           12.164     0.0    8  1.0
+#
+AFIL
+64a015.dat
+#
+#-----------------------------Section 3.1-----------------------------
+#
+#End Rudder Section
+SECTION 
+   17.071        0              9.672          11.091     0.0    8  1.0
+#
+AFIL
+64a015.dat
+#
+CONTROL
+Rudder
+#gain   Xhinge     XYZhvec     SgnDup
+1.0     0.6647    0. 0. 0.       1.0 
+#
+#-----------------------------Section 4-----------------------------
+#
+SECTION
+    18.837       0          12.238       9.211       0.0     8  1.0
+#
+AFIL
+64a015.dat
+#
+#
+#
+#Created by Matthew Mark, 4/18/2023, Updated 4/23/2023 (WORKING)
