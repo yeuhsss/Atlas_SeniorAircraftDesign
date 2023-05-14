@@ -1,20 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sympy import symbols, Eq, solve
 
-def v_n(W,nmax,nmin,rho,CL,S,Vc_ktas,cbar,CLalf,title1,title2): # Adjust input variables as necessary
+def v_n(W,nmax,nmin,rho,CL,S,cbar,CLalf,title1,title2): # Adjust input variables as necessary
 
     # EAS Velocities
-    Vc = (Vc_ktas*1.688)*((rho/0.00237)**(0.5))
-    Vd = 1.25*Vc
-    Vs = 121
     W_S = W/S
+    Vs = ((2*W)/(rho*S*CL))**0.5
     mu = (2*W_S)/(rho*cbar*CLalf*32.2)
     kg = (0.88*mu)/(5.3+mu)
     ude_c = 56
     ude_d = ude_c*0.5
     ude_b = ude_c
-    Vc_eas_kn = Vc/1.688
-    Vb = Vs*(1+(kg*ude_c*Vc_eas_kn*CLalf)/(498*W_S))
+    x, y, z = symbols('x y z')
+    eq1 = Eq(y + 1.32*ude_c - x, 0)
+    eq2 = Eq((x/1.688) - z, 0)
+    eq3 = Eq((Vs*(1+(kg*ude_c*z*CLalf)/(498*W_S))) - y, 0)
+    solution = solve((eq1,eq2,eq3), (x, y, z))
+    Vc = float(solution[x])
+    Vb = float(solution[y])
+    Vc_eas_kn = float(solution[z])
+    Vd = 1.25*Vc
     Vb_eas_kn = Vb/1.688
     Vd_eas_kn = Vd/1.688
 
@@ -85,25 +91,23 @@ def v_n(W,nmax,nmin,rho,CL,S,Vc_ktas,cbar,CLalf,title1,title2): # Adjust input v
     plt.show()
 
 # V-n diagram for MTOW
-W = 67551 # weight (lbf)
-nmax = 3.3 # positive limit load
-nmin = 1.2 # negative limit load
+W = 67551 # weight (lbm)
+nmax = 3 # positive limit load
+nmin = 1 # negative limit load
 rho = 0.00237 # air density (slug/ft^3)
 CL = 3.3 # max lift coefficient
 S = 805.6 # wing area (ft^2)
-Vc_ktas = 350 # KTAS
 cbar = 9.51 # mean chord (ft)
 CLalf = 5.73 # Lift slope (rad^-1)
-v_n(W,nmax,nmin,rho,CL,S,Vc_ktas,cbar,CLalf,'Loads (MTOW)','V-n Diagram (MTOW)')
+v_n(W,nmax,nmin,rho,CL,S,cbar,CLalf,'Loads (MTOW)','V-n Diagram (MTOW)')
 
 # V-n diagram for Minimum Weight
-W = 48441 # weight (lbf)
-nmax = 3.3 # positive limit load
-nmin = 1.2 # negative limit load
+W = 48441 # weight (lbm)
+nmax = 3 # positive limit load
+nmin = 1 # negative limit load
 rho = 0.00237 # air density (slug/ft^3)
 CL = 3.3 # max lift coefficient
 S = 805.6 # wing area (ft^2)
-Vc_ktas = 350 # KTAS
 cbar = 9.51 # mean chord (ft)
 CLalf = 5.73 # Lift slope (rad^-1)
-v_n(W,nmax,nmin,rho,CL,S,Vc_ktas,cbar,CLalf,'Loads (Minimum Weight)','V-n Diagram (Minimum Weight)')
+v_n(W,nmax,nmin,rho,CL,S,cbar,CLalf,'Loads (Minimum Weight)','V-n Diagram (Minimum Weight)')
