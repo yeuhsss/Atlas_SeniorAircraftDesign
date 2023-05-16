@@ -850,7 +850,7 @@ def get_PS_Plot(weight, precision, lbf_lbm, hp, WS, nu_p, AR, w_to, w_L, BFL, rh
 
 #Induced Drag (From AVL)
 #Landing
-df = pd.read_excel(r'C:\Users\henry\OneDrive\Documents\EAE130B\atlas-aircraft\source\q2\Induced_Drag_Data.xlsx', sheet_name='Landing', )
+df = pd.read_excel(r'Induced_Drag_Data.xlsx', sheet_name='Landing', )
 CD_i_landing_vals = df['CD_i']
 Cl_max_landing_vals = df['Clmax']
 
@@ -858,7 +858,7 @@ CD_i_landing_vals = CD_i_landing_vals.to_numpy()
 Cl_max_landing_vals = Cl_max_landing_vals.to_numpy()
 
 #Takeoff
-df = pd.read_excel(r'source\q2\Induced_Drag_Data.xlsx', sheet_name='Takeoff', )
+df = pd.read_excel(r'Induced_Drag_Data.xlsx', sheet_name='Takeoff', )
 CD_i_takeoff_vals = df['CD_i']
 Cl_max_takeoff_vals = df['Clmax']
 
@@ -866,7 +866,7 @@ CD_i_takeoff_vals = CD_i_takeoff_vals.to_numpy()
 Cl_max_takeoff_vals = Cl_max_takeoff_vals.to_numpy()
 
 #Clean
-df = pd.read_excel(r'C:\Users\henry\OneDrive\Documents\EAE130B\atlas-aircraft\source\q2\Induced_Drag_Data.xlsx', sheet_name='Clean', )
+df = pd.read_excel(r'Induced_Drag_Data.xlsx', sheet_name='Clean', )
 CD_i_clean_vals = df['CD_i']
 Cl_max_clean_vals = df['Clmax']
 
